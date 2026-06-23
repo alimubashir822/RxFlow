@@ -98,7 +98,7 @@ export default function DoctorPrescriptionClient({ patients }: DoctorPrescriptio
   return (
     <div className="max-w-4xl mx-auto space-y-8">
       <div>
-        <h1 className="text-3xl font-extrabold tracking-tight text-white flex items-center gap-2">
+        <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-white flex items-center gap-2">
           <FilePlus className="h-8 w-8 text-secondary" /> Write Prescription
         </h1>
         <p className="text-sm text-slate-400 font-light mt-1">
@@ -263,18 +263,18 @@ export default function DoctorPrescriptionClient({ patients }: DoctorPrescriptio
           </div>
 
           {/* Submit Actions */}
-          <div className="flex items-center justify-end gap-4 pt-6 border-t border-brand-border">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 pt-6 border-t border-brand-border">
             <button
               type="button"
               onClick={() => router.push("/doctor/dashboard")}
-              className="px-5 py-2.5 rounded-xl border border-brand-border text-slate-300 hover:bg-white/5 text-xs font-semibold transition"
+              className="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-brand-border text-slate-300 hover:bg-white/5 text-xs font-semibold transition text-center"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isPending}
-              className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-secondary to-primary text-white text-xs font-bold hover:opacity-95 transition flex items-center gap-1.5 shadow-md shadow-secondary/15"
+              className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-gradient-to-r from-secondary to-primary text-white text-xs font-bold hover:opacity-95 transition flex items-center justify-center gap-1.5 shadow-md shadow-secondary/15"
             >
               {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
               Write Prescription

@@ -1,37 +1,12 @@
 import Link from "next/link";
 import { Activity, Shield, Brain, Heart, Bell, MessageSquare, RefreshCw, BarChart } from "lucide-react";
+import LandingHeaderClient from "@/components/LandingHeaderClient";
 
 export default function LandingPage() {
   return (
     <div className="flex flex-col min-h-screen bg-brand-bg text-slate-100 selection:bg-primary selection:text-white">
       {/* Header */}
-      <header className="glass-panel sticky top-0 z-50 w-full px-6 py-4 flex items-center justify-between border-b border-brand-border">
-        <div className="flex items-center gap-2">
-          <Activity className="h-6 w-6 text-primary live-indicator rounded-full" />
-          <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent glow-text-primary">
-            RxFlow
-          </span>
-        </div>
-        <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
-          <a href="#features" className="hover:text-primary transition">Features</a>
-          <a href="#dashboards" className="hover:text-primary transition">Dashboards</a>
-          <a href="#security" className="hover:text-primary transition">Security</a>
-        </nav>
-        <div className="flex items-center gap-4">
-          <Link
-            href="/login"
-            className="text-sm font-medium text-slate-300 hover:text-white transition px-4 py-2"
-          >
-            Sign In
-          </Link>
-          <Link
-            href="/register"
-            className="text-sm font-medium bg-gradient-to-r from-primary to-secondary text-white px-5 py-2.5 rounded-lg hover:opacity-90 transition shadow-lg shadow-primary/20"
-          >
-            Get Started
-          </Link>
-        </div>
-      </header>
+      <LandingHeaderClient />
 
       {/* Hero Section */}
       <main className="flex-1">

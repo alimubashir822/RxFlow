@@ -151,7 +151,7 @@ export default function PrescriptionUploadClient() {
   return (
     <div className="max-w-4xl mx-auto space-y-8">
       <div>
-        <h1 className="text-3xl font-extrabold tracking-tight text-white flex items-center gap-2">
+        <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-white flex items-center gap-2">
           <Brain className="h-8 w-8 text-primary" /> AI Prescription Reader
         </h1>
         <p className="text-sm text-slate-400 font-light mt-1">
@@ -163,7 +163,7 @@ export default function PrescriptionUploadClient() {
         <div
           onDragOver={handleDragOver}
           onDrop={handleDrop}
-          className="glass-panel border-dashed border-2 border-brand-border rounded-3xl p-16 text-center hover:border-primary/40 hover:bg-white/5 transition flex flex-col items-center justify-center cursor-pointer"
+          className="glass-panel border-dashed border-2 border-brand-border rounded-3xl p-6 sm:p-12 md:p-16 text-center hover:border-primary/40 hover:bg-white/5 transition flex flex-col items-center justify-center cursor-pointer"
           onClick={() => document.getElementById("file-upload")?.click()}
         >
           <input
@@ -354,20 +354,20 @@ export default function PrescriptionUploadClient() {
             </div>
 
             {/* Save Buttons */}
-            <div className="flex items-center justify-end gap-4 pt-4 border-t border-brand-border">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 pt-4 border-t border-brand-border">
               <button
                 onClick={() => {
                   setExtractedPlan(null);
                   setFile(null);
                 }}
-                className="px-5 py-2.5 rounded-xl border border-brand-border text-slate-300 hover:bg-white/5 text-sm font-semibold transition"
+                className="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-brand-border text-slate-300 hover:bg-white/5 text-sm font-semibold transition text-center"
               >
                 Discard scan
               </button>
               <button
                 disabled={isPending}
                 onClick={handleConfirmPlan}
-                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-primary to-secondary hover:opacity-95 text-white text-sm font-semibold shadow-lg shadow-primary/15 transition flex items-center gap-1.5"
+                className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-gradient-to-r from-primary to-secondary hover:opacity-95 text-white text-sm font-semibold shadow-lg shadow-primary/15 transition flex items-center justify-center gap-1.5"
               >
                 {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
                 Confirm & Create Plan

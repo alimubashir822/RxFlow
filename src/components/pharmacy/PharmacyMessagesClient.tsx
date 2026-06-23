@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { sendMessageAction } from "@/app/actions/messages";
-import { User, Send, MessageSquare, Loader2, Sparkles } from "lucide-react";
+import { User, Send, MessageSquare, Loader2, Sparkles, ArrowLeft } from "lucide-react";
 
 interface PharmacyMessagesClientProps {
   currentUserId: string;
@@ -20,6 +20,7 @@ export default function PharmacyMessagesClient({
   const [isPending, startTransition] = useTransition();
   const [activePatientId, setActivePatientId] = useState<string>(patients[0]?.id || "");
   const [input, setInput] = useState("");
+  const [showChatOnMobile, setShowChatOnMobile] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Find the selected patient profile
@@ -63,8 +64,8 @@ export default function PharmacyMessagesClient({
     <div className="max-w-6xl mx-auto flex flex-col h-[calc(100vh-12rem)] min-h-[500px] space-y-6">
       {/* Title */}
       <div>
-        <h1 className="text-3xl font-extrabold tracking-tight text-white flex items-center gap-2">
-          <MessageSquare className="h-8 w-8 text-emerald-400" /> Patient Inbox
+        <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-white flex items-center gap-2">
+          <MessageSquare className="h-7 w-7 md:h-8 md:w-8 text-emerald-400" /> Patient Inbox
         </h1>
         <p className="text-sm text-slate-400 font-light mt-1">
           Provide direct guidance or respond to pill refill inquiries from your patients.
@@ -73,7 +74,9 @@ export default function PharmacyMessagesClient({
 
       <div className="flex-1 glass-panel rounded-3xl border border-brand-border flex overflow-hidden">
         {/* Left Side: Patient list */}
-        <div className="w-80 border-r border-brand-border flex flex-col bg-brand-card/15">
+        <div className={`w-full md:w-80 border-r border-brand-border flex flex-col bg-brand-card/15 ${
+          showChatOnMobile ? "hidden md:flex" : "flex"
+        }`}>
           <div className="p-4 border-b border-brand-border bg-brand-card/25">
             <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Patients</span>
           </div>
@@ -87,7 +90,10 @@ export default function PharmacyMessagesClient({
                 return (
                   <button
                     key={patient.id}
-                    onClick={() => setActivePatientId(patient.id)}
+                    onClick={() => {
+                      setActivePatientId(patient.id);
+                      setShowChatOnMobile(true);
+                    }}
                     className={`w-full flex items-center gap-3 p-3 rounded-xl transition text-left border ${
                       active
                         ? "bg-emerald-500/10 border-emerald-500/20 text-white"
@@ -111,14 +117,25 @@ export default function PharmacyMessagesClient({
         </div>
 
         {/* Right Side: Chat box */}
-        <div className="flex-1 flex flex-col overflow-hidden bg-brand-bg/25">
+        <div className={`flex-1 flex flex-col overflow-hidden bg-brand-bg/25 ${
+          showChatOnMobile ? "flex" : "hidden md:flex"
+        }`}>
           {selectedUser ? (
             <>
               {/* Chat Header */}
               <div className="px-6 py-4 border-b border-brand-border bg-brand-card/20 flex items-center justify-between">
-                <div>
-                  <h3 className="text-sm font-bold text-white">{selectedUser.name}</h3>
-                  <p className="text-[10px] text-emerald-400">Direct Patient Communication Channel</p>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setShowChatOnMobile(false)}
+                    className="md:hidden p-1 text-slate-400 hover:text-white"
+                    aria-label="Back to patients list"
+                  >
+                    <ArrowLeft className="h-5 w-5" />
+                  </button>
+                  <div>
+                    <h3 className="text-sm font-bold text-white">{selectedUser.name}</h3>
+                    <p className="text-[10px] text-emerald-400">Direct Patient Communication Channel</p>
+                  </div>
                 </div>
               </div>
 
@@ -146,7 +163,7 @@ export default function PharmacyMessagesClient({
                         </div>
                         <div className={`p-3.5 rounded-2xl text-xs leading-relaxed ${
                           isMe
-                            ? "bg-emerald-500 text-slate-950 font-medium rounded-tr-none"
+                            ? "bg-emerald-505 bg-emerald-500 text-slate-950 font-medium rounded-tr-none"
                             : "bg-brand-bg border border-brand-border text-slate-200 rounded-tl-none"
                         }`}>
                           {msg.content}

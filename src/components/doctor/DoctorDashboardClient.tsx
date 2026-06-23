@@ -18,6 +18,7 @@ import {
   ShieldCheck,
   Send,
   Loader2,
+  ArrowLeft,
 } from "lucide-react";
 
 interface DoctorDashboardClientProps {
@@ -29,6 +30,7 @@ export default function DoctorDashboardClient({ patients }: DoctorDashboardClien
   const [isPending, startTransition] = useTransition();
   const [activePatientId, setActivePatientId] = useState<string>(patients[0]?.id || "");
   const [instructionsText, setInstructionsText] = useState("");
+  const [showDetailsOnMobile, setShowDetailsOnMobile] = useState(false);
 
   const activePatient = patients.find((p) => p.id === activePatientId);
 
@@ -64,8 +66,8 @@ export default function DoctorDashboardClient({ patients }: DoctorDashboardClien
     <div className="max-w-6xl mx-auto flex flex-col space-y-6">
       {/* Title */}
       <div>
-        <h1 className="text-3xl font-extrabold tracking-tight text-white flex items-center gap-2">
-          <Activity className="h-8 w-8 text-secondary" /> Clinical Adherence Portal
+        <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-white flex items-center gap-2">
+          <Activity className="h-7 w-7 md:h-8 md:w-8 text-secondary" /> Clinical Adherence Portal
         </h1>
         <p className="text-sm text-slate-400 font-light mt-1">
           Monitor your patients' medication adherence schedules, review missed doses, and dispatch prescription directives.
@@ -74,7 +76,7 @@ export default function DoctorDashboardClient({ patients }: DoctorDashboardClien
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left Side: Patient list */}
-        <div className="glass-panel rounded-3xl p-6 space-y-4">
+        <div className={`glass-panel rounded-3xl p-6 space-y-4 ${showDetailsOnMobile ? "hidden lg:block" : "block"}`}>
           <h2 className="text-sm font-bold text-white border-b border-brand-border pb-2 flex items-center gap-1.5">
             <Users className="h-4.5 w-4.5 text-secondary" /> Registered Patients
           </h2>
@@ -94,6 +96,7 @@ export default function DoctorDashboardClient({ patients }: DoctorDashboardClien
                     onClick={() => {
                       setActivePatientId(patient.id);
                       setInstructionsText("");
+                      setShowDetailsOnMobile(true);
                     }}
                     className={`w-full flex flex-col gap-3.5 p-4 rounded-2xl transition text-left border ${
                       active
@@ -137,17 +140,25 @@ export default function DoctorDashboardClient({ patients }: DoctorDashboardClien
         </div>
 
         {/* Right Side: Active Patient Adherence details & Prescription Panel */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className={`lg:col-span-2 space-y-6 ${showDetailsOnMobile ? "block" : "hidden lg:block"}`}>
           {activePatient ? (
             <>
+              {/* Back button on mobile */}
+              <button
+                onClick={() => setShowDetailsOnMobile(false)}
+                className="lg:hidden flex items-center gap-1.5 text-xs text-secondary hover:underline mb-2 font-medium"
+              >
+                <ArrowLeft className="h-3.5 w-3.5" /> Back to Patient List
+              </button>
+
               {/* Patient Detail Panel */}
               <div className="glass-panel rounded-3xl p-6 md:p-8 space-y-6">
-                <div className="flex items-start justify-between border-b border-brand-border pb-4">
+                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 border-b border-brand-border pb-4">
                   <div>
                     <h2 className="text-xl font-bold text-white">{activePatient.user.name}</h2>
                     <p className="text-xs text-slate-400 mt-0.5 font-light">Email: {activePatient.user.email}</p>
                   </div>
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-secondary/10 border border-secondary/15 text-xs font-bold text-secondary">
+                  <span className="self-start sm:self-center inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-secondary/10 border border-secondary/15 text-xs font-bold text-secondary">
                     <Heart className="h-3.5 w-3.5 animate-pulse" /> Adherence: {getPatientAdherence(activePatient)}%
                   </span>
                 </div>
@@ -159,7 +170,7 @@ export default function DoctorDashboardClient({ patients }: DoctorDashboardClien
                   {activePatient.medicationSchedules.length === 0 ? (
                     <p className="text-xs text-slate-500 py-2">No active medication schedules configured.</p>
                   ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {activePatient.medicationSchedules.map((sched: any) => (
                         <div key={sched.id} className="p-4 rounded-xl bg-brand-bg/50 border border-brand-border space-y-1">
                           <h4 className="text-xs font-bold text-white flex items-center justify-between">
@@ -220,7 +231,7 @@ export default function DoctorDashboardClient({ patients }: DoctorDashboardClien
                     <button
                       type="submit"
                       disabled={!instructionsText.trim() || isPending}
-                      className="px-4 py-3 rounded-xl bg-secondary text-white font-bold hover:opacity-95 transition disabled:opacity-50 flex items-center justify-center"
+                      className="px-4 py-3 rounded-xl bg-secondary text-white font-bold hover:opacity-95 transition disabled:opacity-50 flex items-center justify-center animate-none"
                     >
                       {isPending ? (
                         <Loader2 className="h-4 w-4 animate-spin" />

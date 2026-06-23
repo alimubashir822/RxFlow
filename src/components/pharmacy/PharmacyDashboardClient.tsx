@@ -74,7 +74,7 @@ export default function PharmacyDashboardClient({ refillRequests }: PharmacyDash
       </div>
 
       {/* Stats row */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
         <div className="glass-card p-5 rounded-2xl flex items-center justify-between">
           <div>
             <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Total Received</span>

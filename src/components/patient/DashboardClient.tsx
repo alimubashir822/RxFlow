@@ -210,7 +210,7 @@ export default function DashboardClient({
       </div>
 
       {/* Analytics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Adherence Card */}
         <div className="glass-card p-6 rounded-2xl flex items-center justify-between">
           <div className="space-y-1">
@@ -447,27 +447,27 @@ export default function DashboardClient({
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2 sm:ml-auto">
+                    <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto sm:ml-auto">
                       {!log ? (
                         <>
                           <button
                             disabled={isPending}
                             onClick={() => handleLogDose(schedule.id, "TAKEN")}
-                            className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-xs font-bold text-white transition flex items-center gap-1"
+                            className="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-xs font-bold text-white transition flex items-center justify-center gap-1"
                           >
                             <CheckCircle2 className="h-3.5 w-3.5" /> Taken
                           </button>
                           <button
                             disabled={isPending}
                             onClick={() => handleLogDose(schedule.id, "SNOOZED")}
-                            className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 transition"
+                            className="flex-1 sm:flex-none px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 transition"
                           >
                             Snooze
                           </button>
                           <button
                             disabled={isPending}
                             onClick={() => handleLogDose(schedule.id, "SKIPPED")}
-                            className="px-3 py-2 rounded-xl bg-danger/10 hover:bg-danger/20 text-xs font-semibold text-danger border border-danger/15 transition"
+                            className="flex-1 sm:flex-none px-3 py-2 rounded-xl bg-danger/10 hover:bg-danger/20 text-xs font-semibold text-danger border border-danger/15 transition"
                           >
                             Skip
                           </button>
@@ -476,7 +476,7 @@ export default function DashboardClient({
                         <button
                           disabled={isPending}
                           onClick={() => handleLogDose(schedule.id, "TAKEN")}
-                          className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-400 transition"
+                          className="w-full sm:w-auto px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-400 transition"
                         >
                           Change Status
                         </button>
