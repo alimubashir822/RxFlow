@@ -1,0 +1,223 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String     @id @default(uuid())
+  email        String     @unique
+  passwordHash String
+  name         String
+  role         String     // "ADMIN", "PATIENT", "DOCTOR", "PHARMACIST", "CAREGIVER"
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  patient      Patient?
+  doctor       Doctor?
+  pharmacy     Pharmacy?
+  caregiver    Caregiver?
+  sentMessages Message[]  @relation("SentMessages")
+  rcvdMessages Message[]  @relation("ReceivedMessages")
+  auditLogs    AuditLog[]
+}
+
+model Patient {
+  id                    String               @id @default(uuid())
+  userId                String               @unique
+  user                  User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dob                   String?
+  phone                 String?
+  address               String?
+  gender                String?              // "MALE", "FEMALE", "OTHER"
+  bloodType             String?
+  insuranceCardUrl      String?
+  insuranceProvider     String?
+  insurancePolicyNumber String?
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @updatedAt
+  prescriptions         Prescription[]
+  medicationSchedules  MedicationSchedule[]
+  doseLogs              DoseLog[]
+  reminders             Reminder[]
+  refillRequests        RefillRequest[]
+  familyMembers         FamilyMember[]
+  caregivers            PatientCaregiver[]
+}
+
+model Doctor {
+  id             String         @id @default(uuid())
+  userId         String         @unique
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  specialization String?
+  licenseNumber  String?
+  phone          String?
+  hospital       String?
+  bio            String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  prescriptions  Prescription[]
+}
+
+model Pharmacy {
+  id             String          @id @default(uuid())
+  userId         String          @unique
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  storeName      String
+  licenseNumber  String?
+  address        String?
+  phone          String?
+  city           String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  refillRequests RefillRequest[]
+}
+
+model Prescription {
+  id               String     @id @default(uuid())
+  patientId        String
+  patient          Patient    @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctorId         String?
+  doctor           Doctor?    @relation(fields: [doctorId], references: [id], onDelete: SetNull)
+  prescriptionDate DateTime   @default(now())
+  documentUrl      String?
+  instructions     String?
+  isExtracted      Boolean    @default(false)
+  aiPlanCreated    Boolean    @default(false)
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  medicines        Medicine[]
+}
+
+model Medicine {
+  id                 String               @id @default(uuid())
+  prescriptionId     String
+  prescription       Prescription         @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
+  name               String
+  dosage             String               // e.g., "500mg" or "1 tablet"
+  frequency          String               // e.g., "3 times/day", "Once daily"
+  duration           String               // e.g., "7 days", "30 days"
+  totalQuantity      Int                  @default(0)
+  remainingQuantity  Int                  @default(0)
+  refillCount        Int                  @default(0)
+  isRefillable       Boolean              @default(false)
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  medicationSchedules MedicationSchedule[]
+  refillRequests     RefillRequest[]
+}
+
+model MedicationSchedule {
+  id           String     @id @default(uuid())
+  patientId    String
+  patient      Patient    @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  medicineId   String
+  medicine     Medicine   @relation(fields: [medicineId], references: [id], onDelete: Cascade)
+  timeOfDay    String     // "MORNING", "AFTERNOON", "EVENING", "NIGHT", "SPECIFIC_TIME"
+  specificTime String?    // "08:00", "13:00", etc.
+  dosage       String?    // dosage details if different from base medicine
+  status       String     @default("ACTIVE") // "ACTIVE", "COMPLETED", "PAUSED"
+  instructions String?
+  startDate    DateTime   @default(now())
+  endDate      DateTime?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  doseLogs     DoseLog[]
+  reminders    Reminder[]
+}
+
+model DoseLog {
+  id         String             @id @default(uuid())
+  scheduleId String
+  schedule   MedicationSchedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+  patientId  String
+  patient    Patient            @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  loggedAt   DateTime           @default(now())
+  status     String             // "TAKEN", "SNOOZED", "SKIPPED"
+  notes      String?
+  createdAt  DateTime           @default(now())
+}
+
+model Reminder {
+  id           String             @id @default(uuid())
+  scheduleId   String
+  schedule     MedicationSchedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+  patientId    String
+  patient      Patient            @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  channel      String             // "PUSH", "EMAIL", "SMS"
+  reminderTime String             // "08:00", etc.
+  isSent       Boolean            @default(false)
+  createdAt    DateTime           @default(now())
+}
+
+model RefillRequest {
+  id          String    @id @default(uuid())
+  patientId   String
+  patient     Patient   @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  medicineId  String
+  medicine    Medicine  @relation(fields: [medicineId], references: [id], onDelete: Cascade)
+  pharmacyId  String
+  pharmacy    Pharmacy  @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+  requestedAt DateTime  @default(now())
+  status      String    @default("PENDING") // "PENDING", "PROCESSING", "READY", "DELIVERED", "REJECTED"
+  quantity    Int       @default(30)
+  notes       String?
+  updatedAt   DateTime  @updatedAt
+}
+
+model Message {
+  id         String   @id @default(uuid())
+  senderId   String
+  sender     User     @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  receiverId String
+  receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+  content    String
+  isRead     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  action    String
+  details   String?
+  createdAt DateTime @default(now())
+}
+
+model FamilyMember {
+  id        String   @id @default(uuid())
+  patientId String
+  patient   Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  name      String
+  relation  String   // "FATHER", "MOTHER", "CHILD", "SPOUSE", "OTHER"
+  dob       String?
+  gender    String?
+  phone     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Caregiver {
+  id        String             @id @default(uuid())
+  userId    String             @unique
+  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  phone     String?
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+  patients  PatientCaregiver[]
+}
+
+model PatientCaregiver {
+  id          String    @id @default(uuid())
+  patientId   String
+  patient     Patient   @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  caregiverId String
+  caregiver   Caregiver @relation(fields: [caregiverId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+
+  @@unique([patientId, caregiverId])
+}
+
